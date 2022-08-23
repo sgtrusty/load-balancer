@@ -6,6 +6,10 @@ from core.socket import SpinachSocket
 
 balancer_socket = None
 
+# TODO: vertical scaling
+# TODO: select for deadlock/dead connections
+# TODO: object pooling for i/o data (FileManager) and close connections asap
+
 # Signal handler for graceful exiting.
 def signal_handler(sig, frame):
     print('Interrupt received, shutting down ...')
@@ -16,7 +20,7 @@ def signal_handler(sig, frame):
 def init(addr):
     global balancer_socket
     # Configuring logger
-    logging.basicConfig(level=logging.ERROR,format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',datefmt='%m-%d %H:%M:%S')
+    logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',datefmt='%m-%d %H:%M:%S')
     logger = logging.getLogger('Core')
     
     # Register our signal handler for shutting down.
