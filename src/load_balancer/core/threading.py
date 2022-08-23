@@ -39,5 +39,5 @@ class ThreadHandler:
     def terminate(self):
         self.executor.terminate()
 
-    def submit(self, task, *args):
-        self.executor.submit(task, *args)
+    def submit(self, task, args):
+        self.executor.submit(task, args)

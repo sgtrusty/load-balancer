@@ -25,7 +25,7 @@ do
 done
 END_RECEIVE=$(date +%s)
 
-if [ "$FAIL" != "0" ]; then 
+if [ "$FAIL" == "0" ]; then 
   echo "FAIL! ($FAIL)" 
 fi
 

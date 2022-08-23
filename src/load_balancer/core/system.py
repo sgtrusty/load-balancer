@@ -14,7 +14,6 @@ balancer_socket = None
 # Signal handler for graceful exiting.
 def signal_handler(sig, frame):
     print('Interrupt received, shutting down ...')
-    balancer_socket.terminate()
     sys.exit(0)
 
 #def init(addr, policy_class):
