@@ -8,8 +8,8 @@ balancer_socket = None
 
 # TODO: vertical scaling
 # TODO: multithreading:
-    # TODO: object pooling for i/o data (FileManager)
-    # TODO: unique selector for SocketMappers
+    # TODO: object pooling for outgoing queries (i.e core.forward > FileManager > write)
+    # TODO: _selector_outgoing can be scaled up with pool (for outgoing)
 
 # Signal handler for graceful exiting.
 def signal_handler(sig, frame):
