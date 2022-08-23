@@ -56,7 +56,7 @@ class SocketMapper:
         # generate_forwarder
         forward_policy = self.__policies[POLICIES.FORWARD]
         forwarder = ForwardHandler(forward_policy, route)
-        # NOTE: Querying the metrics is not part of this test!
+        # NOTE: for querying the metrics if relevant
         #if(forwarder.hasSocket()):
             #self.__selector.register(forwarder.getSocket(), selectors.EVENT_READ, read_upstream)
         return forwarder
@@ -73,7 +73,7 @@ class SocketMapper:
         if (content_valid):
             logger.debug("Receiving content:\n%s", content.strip())
             response = self.sock_out.deliver(content)
-            # NOTE: Querying the metrics is not part of this test!
+            # NOTE: for querying the metrics if relevant
             # if (self.sock_out.hasResponse):
                 # self.__writer.send(json.dumps(response).encode('utf-8'))
         else:
@@ -81,7 +81,7 @@ class SocketMapper:
         self.delete()
 
     def read_upstream(self, reader, mask):
-        # NOTE: Querying the metrics is not part of this test!
+        # NOTE: for querying the metrics if relevant
         # if len(data) == 0: # No messages in socket, we can close down the socket
         #     return
         # else:
