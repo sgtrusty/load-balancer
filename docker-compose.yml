@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  metric-load-balancer:
+    build: src/load_balancer
+    networks:
+      mynet:
+        ipv4_address: 172.25.0.10
+    environment:
+      - LOAD_BALANCER_IP=172.32.0.10
+    ports:
+      - "5000:5000"
+    volumes:
+      - "/data"
+  test-client:
+    build: src/test_client
+networks:
+  mynet:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.25.0.0/24

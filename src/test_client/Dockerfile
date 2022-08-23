@@ -9,15 +9,9 @@ RUN apk update && apk upgrade && \
 # Make dir app
 RUN mkdir /app
 WORKDIR /app
-COPY ./src/requirements.txt requirements.txt
-
-RUN pip install -r requirements.txt
 
 # Copy the source from the current directory to the Working Directory inside the container
-COPY ./src .
-
-# Expose port 5000 to the outside world
-EXPOSE 5000
+COPY . .
 
 # Run the executable
-CMD ["python", "balancer.py"]
+CMD ["python", "test_client.py"]
