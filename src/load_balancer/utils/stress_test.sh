@@ -9,7 +9,7 @@ PID_LIST=""
 echo -e "Started"
 START=$(date +%s)
 for i in $(seq $C); do
-  echo -e "STRESS TEST\n" | nc 172.25.0.10 5000 > /dev/null 2>&1 &
+  echo -e "STRESS TEST" | nc 172.25.0.10 5000 > /dev/null 2>&1 &
   PID=$!
   PID_LIST="$PID_LIST $PID"
   #echo -e "Requests $i" ## bottleneck

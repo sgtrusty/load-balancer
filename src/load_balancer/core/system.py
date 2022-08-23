@@ -2,13 +2,14 @@ import sys
 import signal
 import logging
 
-from core.socket import SpinachSocket
+from core.balancer import SpinachBalancer
 
 balancer_socket = None
 
 # TODO: vertical scaling
-# TODO: select for deadlock/dead connections
-# TODO: object pooling for i/o data (FileManager) and close connections asap
+# TODO: multithreading:
+    # TODO: object pooling for i/o data (FileManager)
+    # TODO: unique selector for SocketMappers
 
 # Signal handler for graceful exiting.
 def signal_handler(sig, frame):
@@ -28,9 +29,6 @@ def init(addr):
     signal.signal(signal.SIGINT, signal_handler)
 
     # Set up socket for accepting client requests.
-    logger.info('Initializing socket with '+addr[0]+':'+str(addr[1]))
-    balancer_socket = SpinachSocket(addr)
-
-    # Keep the balancer running forever.
-    logger.info('Running Metric Load Balancer')
+    logger.info('Running Spinach Socket on '+addr[0]+':'+str(addr[1]))
+    balancer_socket = SpinachBalancer(addr)
     balancer_socket.persist()

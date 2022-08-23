@@ -78,3 +78,7 @@ SCALE_POLICIES = {
     "LeastResponseTime": LeastResponseTime,
     "Random": RandomChoice
 }
+
+class ScalingHandler(ScalePolicy):
+    def __new__(self, scaling_type, routes):
+        return scaling_type(routes)
