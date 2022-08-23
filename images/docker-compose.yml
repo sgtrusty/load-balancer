@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  load-balancer:
+    build: ../app/metric-load-balancer
+    ports:
+      - "5000:5000"
+    volumes:
+      - ../app/metric-load-balancer/src/:/mnt
