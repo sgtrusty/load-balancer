@@ -1,29 +1,6 @@
 import argparse
-import signal
-import logging
 
-#from core.policies import *
-from core.system import signal_handler
-from core.socket import SocketBalancer
-
-#def init(addr, policy_class):
-def init(addr):
-    # Configuring logger
-    logging.basicConfig(level=logging.WARNING,format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',datefmt='%m-%d %H:%M:%S')
-    logger = logging.getLogger('Core')
-    
-    # Register our signal handler for shutting down.
-    logger.info('Binding kill signal handler')
-    signal.signal(signal.SIGINT, signal_handler)
-
-    # Set up socket for accepting client requests.
-    logger.info('Initializing socket with '+addr[0]+':'+str(addr[1]))
-    balancer_socket = SocketBalancer(addr)
-
-    # Keep the balancer running forever.
-    logger.info('Running Metric Load Balancer')
-    while(1):
-        balancer_socket.persist()
+from core.system import init
 
 # Our main function.
 def main():

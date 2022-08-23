@@ -1,48 +1,57 @@
 import socket
 import logging
+import select
+import queue
 
+from core.threading import ThreadHandler
 from core.socket_reader import SocketReader
-from core.socket_forward import SocketForwardHandler, FORWARD_POLICIES
+from core.socket_balancer import SocketBalancer
+from core.socket_forward import FORWARD_POLICIES
+from core.socket_scaling import SCALE_POLICIES
 logger = logging.getLogger('Socket')
 
-# Define a constant timeout in seconds for the balancer to redo its performance calculations.
-BALANCER_TIMEOUT = 120
-
 # Class for setting up socket for accepting client requests.
-class SocketBalancer:
-    def __init__(self, addr, forward_policy=FORWARD_POLICIES['File']):
-        balancer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        balancer_socket.bind(addr)
-        #balancer_socket.listen()
-        #balancer_socket.setblocking(False)
-        balancer_socket.listen(1)
-        #balancer_socket.settimeout(BALANCER_TIMEOUT)
-        self.balancer_socket = balancer_socket
-        self.reader = SocketReader()
-        self.forwarder = SocketForwardHandler(forward_policy)
+class SpinachSocket:
+    __terminated = False
+    def __init__(self, addr, routes=['route001', 'route002', 'route003'], forward_policy=FORWARD_POLICIES['File'], scale_policy=SCALE_POLICIES['Random']):
+        __balancer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        __balancer_socket.bind(addr)
+        #__balancer_socket.listen()
+        #__balancer_socket.setblocking(False)
+        __balancer_socket.listen(1)
 
-    def balance_load(self, selected_route, content):
-        logger.debug("\nDestination: %s\nContent: %s", selected_route, content.strip())
-        self.forwarder.forward(selected_route, content)
+        self.__balancer_socket = __balancer_socket
+        self.__routes = routes
+        self.__forward_policy = forward_policy
+        self.__scale_policy = scale_policy
+
+        self.__threader = ThreadHandler()
+
+    def __handle_conn(self, conn):
+        logger.debug(conn)
+        reader = SocketReader(conn)
+        (content, content_valid) = reader.handle()
+        if (content_valid):
+            logger.debug("\nContent: %s", content.strip())
+            balancer = SocketBalancer(self.__routes, self.__scale_policy, self.__forward_policy, content)
+            logger.info("Rerouting to destination: %s", balancer)
+
+            del content
+            del content_valid
+        else:
+            logger.warning("Wrong chunks length received: %s", content)
+        conn.close()
 
     def persist(self):
-        try:
-            logger.info('\n-- Waiting for incoming client connection --\n')
-            conn, addr = self.balancer_socket.accept()
-            logger.info('Accepted connection from client address: %s:%i', addr[0], addr[1])
+        while(not self.__terminated):
+            try:
+                conn, addr = self.__balancer_socket.accept()
+                logger.info('Accepted connection from client address %s:%i', addr[0], addr[1])
+                self.__threader.submit(self.__handle_conn, conn)
+            except socket.timeout:
+                logger.info('Balancer timed out! Recalculating performance metrics ...\n')
 
-            selected_route = "NONE"
-
-            logger.debug(conn)
-            (content, content_valid) = self.reader.handle(conn)
-            if (content_valid):
-                self.balance_load(selected_route, content)
-
-                del content
-                del content_valid
-            else:
-                logger.warning("Wrong chunks length received: %s", content)
-            
-            conn.close()
-        except socket.timeout:
-            logger.info('Balancer timed out! Recalculating performance metrics ...\n')
+    def terminate(self):
+        self.__threader.terminate()
+        self.__terminated = True
+        

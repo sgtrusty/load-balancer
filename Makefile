@@ -10,7 +10,7 @@ MLB_COMPOSE_NAME := "metric-load-balancer"
 #endregion
 
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
-.PHONY: help all build up start down destroy stop restart run updestroy logs ps mlb logs-mlb login-mlb
+.PHONY: help all build up start down destroy stop restart run updestroy logs ps stats mlb logs-mlb login-mlb
 help: ### Shows this help
 	@awk 'BEGIN {FS = ":.*###"; printf "make \033[36m<command>\033[0m [c=image-name]\n\nUsage:\033[36m\033[0m\n"} /^[$$()% 0-9a-zA-Z_-]+:.*?###/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^###@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 ##
@@ -39,6 +39,8 @@ logs: ### Bring up logs for app
 	docker-compose -f $(COMPOSE_FILE) logs --tail=100 -f $(c)
 ps: ### Shows running containers
 	docker-compose -f $(COMPOSE_FILE) ps
+stats: ### Shows resources being consumed by the system
+	docker ps --format={{.Names}} --filter "label=com.docker.compose.project=metric-load-balancer" | xargs docker stats
 ##
 mlb: ### Builds MLB and runs self-removing instance.
 	make build c=$(MLB_COMPOSE_NAME); make run c=$(MLB_COMPOSE_NAME)

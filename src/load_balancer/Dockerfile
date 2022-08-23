@@ -22,4 +22,4 @@ RUN chmod +x utils/*
 EXPOSE 5000
 
 # Run the executable
-CMD utils/load_balancer_eth0.sh
+CMD utils/bind_eth0.sh

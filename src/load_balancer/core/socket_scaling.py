@@ -1,9 +1,11 @@
+import random
+
 # n to 1 policy
 class N2One:
     def __init__(self, servers):
         self.servers = servers  
 
-    def select_server(self):
+    def route(self):
         return self.servers[0]
 
     def update(self, *arg):
@@ -15,7 +17,7 @@ class RoundRobin:
     def __init__(self, servers):
         self.servers = servers
 
-    def select_server(self):
+    def route(self):
         pass
     
     def update(self, *arg):
@@ -27,7 +29,7 @@ class LeastConnections:
     def __init__(self, servers):
         self.servers = servers
 
-    def select_server(self):
+    def route(self):
         pass
 
     def update(self, *arg):
@@ -39,16 +41,29 @@ class LeastResponseTime:
     def __init__(self, servers):
         self.servers = servers
 
-    def select_server(self):
+    def route(self):
         pass
 
     def update(self, *arg):
         pass
 
 
-POLICIES = {
+# random
+class RandomChoice:
+    def __init__(self, servers):
+        self.servers = servers
+
+    def route(self):
+        return random.choice(self.servers)
+
+    def update(self, *arg):
+        pass
+
+
+SCALE_POLICIES = {
     "N2One": N2One,
     "RoundRobin": RoundRobin,
     "LeastConnections": LeastConnections,
-    "LeastResponseTime": LeastResponseTime
+    "LeastResponseTime": LeastResponseTime,
+    "Random": RandomChoice
 }

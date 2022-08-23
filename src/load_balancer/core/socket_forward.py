@@ -1,5 +1,3 @@
-import logging
-
 # least connections policy
 class SocketForwardPolicy:
     def deliver(self, route, content):
@@ -20,9 +18,10 @@ class SocketForwardPolicyObjectPool(SocketForwardPolicy):
 class SocketForwardPolicyFile(SocketForwardPolicy):
     FILE_POOL = '.objs/'
     def deliver(self, route, content):
-        file1 = open(self.FILE_POOL + route, "a")
-        file1.write(content)
-        file1.close()
+        #file1 = open(self.FILE_POOL + route, "a")
+        #file1.write(content)
+        #file1.close()
+        pass
 
 FORWARD_POLICIES = {
     "HTTP": SocketForwardPolicyHTTP,
